@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shopping Complex</title>
+  </head>
+  <body>
+    <h1>Shopping Complex</h1>
+    <h2>Add Shop</h2>
+    <input type="text" id="name" placeholder="Name" />
+    <input type="number" id="rent" placeholder="Rent" />
+    <button onclick="handleAddShop()">Add Shop</button>
+    <h2>Shops</h2>
+    <ul id="shops"></ul>
+    <h2>Total Rent</h2>
+    <p id="total-rent"></p>
+
+    <script>
+      class Shop {
+        constructor(name, rent) {
+          this.name = name;
+          this.rent = rent;
+        }
+      }
+
+      class ShoppingComplex {
+        constructor() {
+          this.shops = [];
+        }
+
+        addShop(shop) {
+          this.shops.push(shop);
+        }
+
+        getTotalRent() {
+          let totalRent = 0;
+          for (let i = 0; i < this.shops.length; i++) {
+            totalRent += this.shops[i].rent;
+          }
+          return totalRent;
+        }
+      }
+
+      const complex = new ShoppingComplex();
+      let selectedShopIndex = null;
+
+      function handleAddShop() {
+        const nameInput = document.querySelector("#name");
+        const rentInput = document.querySelector("#rent");
+
+        const name = nameInput.value;
+        const rent = parseInt(rentInput.value);
+
+        const shop = new Shop(name, rent);
+        complex.addShop(shop);
+
+        nameInput.value = "";
+        rentInput.value = "";
+
+        renderShops();
+      }
+
+      function renderShops() {
+        const shopsList = document.querySelector("#shops");
+        shopsList.innerHTML = "";
+
+        for (let i = 0; i < complex.shops.length; i++) {
+          const shop = complex.shops[i];
+          const li = document.createElement("li");
+          li.textContent = `${shop.name} - ${shop.rent}`;
+
+          // Delete button
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.onclick = () => handleDeleteShop(i);
+          li.appendChild(deleteButton);
+
+          // Edit button
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.onclick = () => handleEditShop(i);
+          li.appendChild(editButton);
+
+          shopsList.appendChild(li);
+        }
+
+        const totalRent = complex.getTotalRent();
+        const totalRentElement = document.querySelector("#total-rent");
+        totalRentElement.textContent = `Total rent of all shops: ${totalRent}`;
+      }
+
+      // Delete Shop
+      function handleDeleteShop(index) {
+        complex.shops.splice(index, 1);
+        renderShops();
+      }
+
+      // Edit Shop
+      function handleEditShop(index) {
+        const shop = complex.shops[index];
+        const nameInput = document.querySelector("#name");
+        const rentInput = document.querySelector("#rent");
+        const addButton = document.querySelector("button[onclick='handleAddShop()']");
+
+        nameInput.value = shop.name;
+        rentInput.value = shop.rent;
+
+        addButton.textContent = "Update";
+        addButton.onclick = () => handleUpdateShop(index);
+
+        selectedShopIndex = index;
+      }
+
+      // Update Shop
+      function handleUpdateShop(index) {
+        const nameInput = document.querySelector("#name");
+        const rentInput = document.querySelector("#rent");
+
+        const name = nameInput.value;
+        const rent = parseInt(rentInput.value);
+
+        complex.shops[index].name = name;
+        complex.shops[index].rent = rent;
+
+        nameInput.value = "";
+        rentInput.value = "";
+
+        const addButton = document.querySelector("button[onclick='handleAddShop()']");
+        addButton.textContent = "Add Shop";
+        addButton.onclick = handleAddShop;
+
+        selectedShopIndex = null;
+
+        renderShops();
+      }
+    </script>
+  </body>
+</html>
